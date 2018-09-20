@@ -19,6 +19,7 @@ class QuerySerializer(ModelSerializer):
     )
 
     assignee = MaintainerSerializer(
+        read_only=True,
         many=True,
     )
 

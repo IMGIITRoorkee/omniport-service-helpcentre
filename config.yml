@@ -3,5 +3,4 @@ nomenclature:
   verboseName: Helpcentre
 baseUrls:
   http: helpcentre/
-  ws: helpcentre/
   isApi: true
