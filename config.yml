@@ -1,0 +1,7 @@
+nomenclature:
+  name: helpcentre
+  verboseName: Helpcentre
+baseUrls:
+  http: helpcentre/
+  ws: helpcentre/
+  isApi: true
