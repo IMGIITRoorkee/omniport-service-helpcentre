@@ -11,9 +11,6 @@ from comments.views import CommentViewSet
 from helpcentre.serializers.serializers import *
 
 
-Maintainer = swapper.load_model('kernel', 'Maintainer')
-
-
 class QueryViewSet(ModelViewSet):
     """
     The view for CRUD operations of a query
@@ -31,6 +28,12 @@ class QueryViewSet(ModelViewSet):
     ]
 
     def get_serializer_class(self):
+        """
+        This function decides the serializer class according to the type of
+        request
+        :return: the serializer class
+        """
+        
         if self.action == 'list':
             return QuerySerializer
         elif self.action == 'retrieve':
@@ -65,6 +68,7 @@ class QueryViewSet(ModelViewSet):
         :return: 403 (Forbidden) if the user is not authorized and
         partial_update if user is allowed to perform the same
         """
+
         request_keys = request.data.keys()
         if not has_helpcentre_rights(request.user):
             if 'assignee' in request_keys or 'is_closed' in request_keys:
