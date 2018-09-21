@@ -33,7 +33,7 @@ class QueryViewSet(ModelViewSet):
     def get_serializer_class(self):
         if self.action == 'list':
             return QuerySerializer
-        if self.action == 'retrieve':
+        elif self.action == 'retrieve':
             return QueryDetailSerializer
         return QuerySerializer
 
@@ -47,9 +47,11 @@ class QueryViewSet(ModelViewSet):
 
         person = self.request.user.person
         if has_helpcentre_rights(self.request.user):
-            return Query.objects.all()
+            return Query.objects.all().order_by('-datetime_modified')
         else:
-            return Query.objects.filter(uploader=person)
+            return Query.objects.filter(uploader=person).order_by(
+                '-datetime_modified'
+            )
 
     def partial_update(self, request, *args, **kwargs):
         """
@@ -63,7 +65,6 @@ class QueryViewSet(ModelViewSet):
         :return: 403 (Forbidden) if the user is not authorized and
         partial_update if user is allowed to perform the same
         """
-
         request_keys = request.data.keys()
         if not has_helpcentre_rights(request.user):
             if 'assignee' in request_keys or 'is_closed' in request_keys:
