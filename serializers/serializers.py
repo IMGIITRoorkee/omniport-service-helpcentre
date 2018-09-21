@@ -23,6 +23,29 @@ class QuerySerializer(ModelSerializer):
         many=True,
     )
 
+    class Meta:
+        """
+        Meta class for Query Serializer class
+        """
+
+        model = Query
+        exclude = (
+            'removed',
+            'datetime_created',
+            'comments',
+        )
+        read_only = (
+            'id',
+            'uploader',
+        )
+        depth = 1
+
+
+class QueryDetailSerializer(QuerySerializer):
+    """
+    Serializer for the Detailed Query
+    """
+
     comments = CommentSerializer(
         many=True,
         read_only=True,
@@ -30,7 +53,7 @@ class QuerySerializer(ModelSerializer):
 
     class Meta:
         """
-        Meta class for Query Serializer class
+        Meta class for QueryDetailSerializer class
         """
 
         model = Query

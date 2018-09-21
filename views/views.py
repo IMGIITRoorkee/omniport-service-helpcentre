@@ -30,6 +30,13 @@ class QueryViewSet(ModelViewSet):
         'head',
     ]
 
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return QuerySerializer
+        if self.action == 'retrieve':
+            return QueryDetailSerializer
+        return QuerySerializer
+
     def get_queryset(self):
         """
         This function overrides the default get_queryset function and displays
