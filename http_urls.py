@@ -1,13 +1,17 @@
-from django.conf.urls import url, include
+from django.urls import path, include
 from rest_framework import routers
 
-from helpcentre.views.views import *
+from helpcentre.views.views import (
+    QueryViewSet,
+    HelpcentreCommentViewset,
+)
 
-router = routers.DefaultRouter()
+app_name = 'helpcentre'
 
+router = routers.SimpleRouter()
 router.register(r'query', QueryViewSet, base_name='query')
 router.register(r'comments', HelpcentreCommentViewset, base_name='comment')
 
 urlpatterns = [
-    url(r'^', include(router.urls)),
+    path('', include(router.urls)),
 ]

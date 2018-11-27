@@ -1,6 +1,8 @@
 nomenclature:
   name: helpcentre
   verboseName: Helpcentre
+description: A platform to seek answers and get help
+isApi: true
 baseUrls:
   http: helpcentre/
-  isApi: true
+

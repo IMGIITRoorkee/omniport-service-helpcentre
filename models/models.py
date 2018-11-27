@@ -1,15 +1,14 @@
 import swapper
-
 from django.db import models
 
+from comments.mixins import CommentableMixin
 from kernel.models.root import Model
 from kernel.utils.upload_to import UploadTo
 
-from comments.mixins import CommentableMixin
 
 class Query(CommentableMixin, Model):
     """
-    This model holds the information about the queries in the helpcentre
+    This model holds the information about a query asked by a user of Omniport
     """
 
     title = models.CharField(
