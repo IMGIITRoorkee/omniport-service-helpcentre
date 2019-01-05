@@ -1,14 +1,12 @@
-import swapper
-
-from rest_framework.viewsets import ModelViewSet
+from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework import status
-
-from kernel.utils.rights import has_helpcentre_rights
+from rest_framework.viewsets import ModelViewSet
 
 from comments.views import CommentViewSet
 from helpcentre.serializers.serializers import *
+from kernel.utils.rights import has_helpcentre_rights
+from kernel.managers.get_role import get_role
 
 
 class QueryViewSet(ModelViewSet):
@@ -33,7 +31,7 @@ class QueryViewSet(ModelViewSet):
         request
         :return: the serializer class
         """
-        
+
         if self.action == 'list':
             return QuerySerializer
         elif self.action == 'retrieve':
@@ -47,14 +45,26 @@ class QueryViewSet(ModelViewSet):
         users are displayed a list of their asked queries.
         :return: the corresponding queryset to the view accordingly
         """
-
+        
+        result = []
+        status = ''
         person = self.request.user.person
+        if 'status' in self.request.query_params:
+            status = self.request.query_params['status']
         if has_helpcentre_rights(self.request.user):
-            return Query.objects.all().order_by('-datetime_modified')
+            result = Query.objects.all().order_by('-datetime_modified')
+            if status == 'assigned':
+                maintainer = get_role(person, 'Maintainer', silent=True)
+                return result.filter(assignee=maintainer)
         else:
-            return Query.objects.filter(uploader=person).order_by(
+            result = Query.objects.filter(uploader=person).order_by(
                 '-datetime_modified'
             )
+        if status == 'opened':
+            return result.filter(is_closed=False)
+        elif status == 'closed':
+            return result.filter(is_closed=True)
+        return result
 
     def partial_update(self, request, *args, **kwargs):
         """

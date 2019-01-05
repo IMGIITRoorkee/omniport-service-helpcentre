@@ -49,7 +49,6 @@ class QuerySerializer(ModelSerializer):
 
         model = Query
         exclude = [
-            'removed',
             'datetime_created',
             'comments',
         ]
@@ -82,7 +81,6 @@ class QueryDetailSerializer(QuerySerializer):
 
         model = Query
         exclude = [
-            'removed',
             'datetime_created',
         ]
         read_only = [
