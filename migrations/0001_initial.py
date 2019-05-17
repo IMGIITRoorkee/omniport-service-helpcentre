@@ -3,7 +3,7 @@
 from django.conf import settings
 from django.db import migrations, models
 import django.db.models.deletion
-import kernel.utils.upload_to
+import formula_one.utils.upload_to
 
 
 class Migration(migrations.Migration):
@@ -26,9 +26,9 @@ class Migration(migrations.Migration):
                 ('title', models.CharField(max_length=127)),
                 ('app_name', models.CharField(max_length=63)),
                 ('query', models.TextField()),
-                ('uploaded_file', models.FileField(blank=True, null=True, upload_to=kernel.utils.upload_to.UploadTo('helpcentre', 'queries'))),
+                ('uploaded_file', models.FileField(blank=True, null=True, upload_to=formula_one.utils.upload_to.UploadTo('helpcentre', 'queries'))),
                 ('is_closed', models.BooleanField(default=False)),
-                ('assignee', models.ManyToManyField(blank=True, to=settings.KERNEL_MAINTAINER_MODEL)),
+                ('assignees', models.ManyToManyField(blank=True, to=settings.KERNEL_MAINTAINER_MODEL)),
                 ('comments', models.ManyToManyField(blank=True, to='comments.Comment')),
                 ('uploader', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.KERNEL_PERSON_MODEL)),
             ],
