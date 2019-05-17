@@ -2,8 +2,8 @@ import swapper
 from django.db import models
 
 from comments.mixins import CommentableMixin
-from kernel.models.root import Model
-from kernel.utils.upload_to import UploadTo
+from formula_one.models.base import Model
+from formula_one.utils.upload_to import UploadTo
 
 
 class Query(CommentableMixin, Model):
@@ -36,7 +36,7 @@ class Query(CommentableMixin, Model):
         default=False,
     )
 
-    assignee = models.ManyToManyField(
+    assignees = models.ManyToManyField(
         to=swapper.get_model_name('kernel', 'Maintainer'),
         blank=True,
     )

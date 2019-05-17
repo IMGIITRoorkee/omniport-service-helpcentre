@@ -1,1 +1,1 @@
-from helpcentre.models.models import Query
+from helpcentre.models.query import Query
