@@ -1,6 +1,3 @@
-from django.apps import AppConfig
+from configuration.utils.app_config_class import get_app_config_class
 
-
-class HelpcentreConfig(AppConfig):
-    name = 'helpcentre'
-    verbose_name = 'Helpcentre'
+Config = get_app_config_class(__file__)
