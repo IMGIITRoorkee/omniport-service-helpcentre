@@ -2,13 +2,13 @@ import swapper
 from rest_framework import serializers
 
 from comments.serializers import CommentSerializer
+from formula_one.serializers.base import ModelSerializer
 from helpcentre.models import Query
 from kernel.serializers.person import AvatarSerializer
-from kernel.serializers.roles.maintainers import MaintainerSerializer
-from kernel.serializers.root import ModelSerializer
+from omniport.utils import switcher
 
 Maintainer = swapper.load_model('kernel', 'Maintainer')
-
+MaintainerSerializer = switcher.load_serializer('kernel', 'Maintainer')
 
 class QuerySerializer(ModelSerializer):
     """
