@@ -10,6 +10,7 @@ from omniport.utils import switcher
 Maintainer = swapper.load_model('kernel', 'Maintainer')
 MaintainerSerializer = switcher.load_serializer('kernel', 'Maintainer')
 
+
 class QuerySerializer(ModelSerializer):
     """
     Serializer for the Query model
@@ -19,14 +20,14 @@ class QuerySerializer(ModelSerializer):
         read_only=True,
     )
 
-    assignee = serializers.PrimaryKeyRelatedField(
+    assignees = serializers.PrimaryKeyRelatedField(
         queryset=Maintainer.objects.all(),
         many=True,
     )
 
     def create(self, validated_data):
         """
-        Overrides the create method to remove the parameters `assignee` and
+        Overrides the create method to remove the parameters `assignees` and
         `is_closed` from request.
         :param validated_data: validated_data by serializer
         :return: created instance of Query
@@ -34,8 +35,8 @@ class QuerySerializer(ModelSerializer):
 
         request_keys = validated_data.keys()
 
-        if 'assignee' in request_keys:
-            validated_data.pop('assignee')
+        if 'assignees' in request_keys:
+            validated_data.pop('assignees')
         elif 'is_closed' in request_keys:
             validated_data.pop('is_closed')
 
@@ -69,7 +70,7 @@ class QueryDetailSerializer(QuerySerializer):
         read_only=True,
     )
 
-    assignee = MaintainerSerializer(
+    assignees = MaintainerSerializer(
         read_only=True,
         many=True,
     )

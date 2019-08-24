@@ -45,7 +45,7 @@ class QueryViewSet(ModelViewSet):
         users are displayed a list of their asked queries.
         :return: the corresponding queryset to the view accordingly
         """
-        
+
         result = []
         status = ''
         person = self.request.user.person
@@ -55,7 +55,7 @@ class QueryViewSet(ModelViewSet):
             result = Query.objects.all().order_by('-datetime_modified')
             if status == 'assigned':
                 maintainer = get_role(person, 'Maintainer', silent=True)
-                return result.filter(assignee=maintainer)
+                return result.filter(assignees=maintainer)
         else:
             result = Query.objects.filter(uploader=person).order_by(
                 '-datetime_modified'
@@ -71,7 +71,7 @@ class QueryViewSet(ModelViewSet):
         This function overrides the partial_update function (invoked when PATCH
         request is made). This determines the fields that are not editable by
         normal users which can be edited by Maintainers.
-        For example: is_closed and assignee field
+        For example: is_closed and assignees field
         :param request: the request from the client
         :param args: other args
         :param kwargs: other kwargs
@@ -81,7 +81,7 @@ class QueryViewSet(ModelViewSet):
 
         request_keys = request.data.keys()
         if not has_helpcentre_rights(request.user):
-            if 'assignee' in request_keys or 'is_closed' in request_keys:
+            if 'assignees' in request_keys or 'is_closed' in request_keys:
                 return Response(
                     data={
                         'Error': 'You cannot perform this operation.'
