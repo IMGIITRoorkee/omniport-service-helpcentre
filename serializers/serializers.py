@@ -50,11 +50,11 @@ class QuerySerializer(ModelSerializer):
 
         model = Query
         exclude = [
-            'datetime_created',
             'comments',
         ]
         read_only = [
             'id',
+            'datetime_created',
             'uploader',
         ]
         depth = 1
@@ -82,10 +82,11 @@ class QueryDetailSerializer(QuerySerializer):
 
         model = Query
         exclude = [
-            'datetime_created',
+            'datetime_modified'
         ]
         read_only = [
             'id',
+            'datetime_created',
             'uploader',
         ]
         depth = 1
