@@ -5,6 +5,7 @@ from helpcentre.views.views import (
     QueryViewSet,
     HelpcentreCommentViewset,
 )
+from helpcentre.views.allows_polyjuice import AllowsPolyjuiceView
 
 app_name = 'helpcentre'
 
@@ -14,4 +15,5 @@ router.register(r'comments', HelpcentreCommentViewset, base_name='comment')
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('allows_polyjuice/', AllowsPolyjuiceView.as_view()),
 ]
