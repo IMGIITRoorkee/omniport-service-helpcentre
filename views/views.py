@@ -1,3 +1,5 @@
+import swapper
+
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -7,6 +9,13 @@ from comments.views import CommentViewSet
 from helpcentre.serializers.serializers import *
 from kernel.utils.rights import has_helpcentre_rights
 from kernel.managers.get_role import get_role
+from notifications.actions import push_notification
+from helpcentre.serializers.serializers import *
+from helpcentre.utils import get_base_category
+
+
+Person = swapper.load_model('kernel', 'Person')
+Maintainer = swapper.load_model('kernel', 'Maintainer')
 
 
 class QueryViewSet(ModelViewSet):
@@ -88,6 +97,112 @@ class QueryViewSet(ModelViewSet):
                     },
                     status=status.HTTP_403_FORBIDDEN,
                 )
+
+        # Notifications start
+
+        request_person = self.request.person
+        query_id = request.data.get('id')
+        query = Query.objects.get(id=query_id)
+        category_obj = get_base_category()
+        url = f'/helpcentre/issue/{query_id}'
+
+        # For query status related notification
+        if 'is_closed' in request.data.keys():
+            if query.is_closed != request.data['is_closed']:
+                if request.data['is_closed'] is True:
+                    status = 'closed'
+                else:
+                    status = 'open'
+                template = f'Your query {query.title} has been marked {status}'
+                person_id = query.uploader.id
+                push_notification(
+                    template=template,
+                    category=category_obj,
+                    web_onclick_url=url,
+                    person=person_id,
+                    is_personalised=True
+                )
+
+        # For assignee related notification
+        if 'assignees' in request.data.keys():
+            new_assignees = request.data['assignees']
+            old_assignees = list(query.assignees.all().values_list(
+                'id', flat=True)
+            )
+            is_added = None
+            assignee_id = None
+            for maintainer_id in new_assignees:
+                if assignee_id is not None:
+                    break
+                if maintainer_id not in old_assignees:
+                    is_added = True
+                    assignee_id = maintainer_id
+                    break
+            for maintainer_id in old_assignees:
+                if assignee_id is not None:
+                    break
+                if maintainer_id not in new_assignees:
+                    is_added = False
+                    assignee_id = maintainer_id
+                    break
+            status = 'assigned to' if is_added is True else 'unassigned from'
+            common_assignees = [
+                id for id in new_assignees if id in old_assignees
+            ]
+
+            # For the fellow assignees
+            person = Maintainer.objects.get(id=assignee_id).person
+            person_ids = [
+                Maintainer.objects.get(id=maintainer_id).person_id
+                for maintainer_id in common_assignees
+            ]
+            person_ids = [
+                id for id in person_ids if id != request_person.id
+            ]
+            template = (
+                f'{person.full_name} has been {status} query '
+                f'{query.title} opened by {query.uploader.full_name}'
+                f' for app {query.app_name}'
+            )
+            if person_ids:
+                push_notification(
+                    template=template,
+                    category=category_obj,
+                    web_onclick_url=url,
+                    persons=person_ids,
+                    has_custom_users_target=True
+                )
+
+            # For the query opener
+            if is_added is not None and query.uploader_id != request_person.id:
+                template = f'{person.full_name} has been {status} your query {query.title}'
+                person_id = query.uploader_id
+                push_notification(
+                    template=template,
+                    category=category_obj,
+                    web_onclick_url=url,
+                    person=person_id,
+                    is_personalised=True
+                )
+
+            # For the newly assigned/unassigned maintainer
+            person_id = Maintainer.objects.get(id=assignee_id).person_id
+            if person_id != request_person.id:
+                template = (
+                    f'You have been {status} query {query.title} '
+                    f'opened by {query.uploader.full_name}'
+                    f' for app {query.app_name}'
+                )
+                push_notification(
+                    template=template,
+                    category=category_obj,
+                    web_onclick_url=url,
+                    person=person_id,
+                    is_personalised=True
+                )
+
+        # Notifications end
+
         return super(QueryViewSet, self).partial_update(request, *args, **kwargs)
 
     def perform_create(self, serializer):
@@ -147,6 +262,50 @@ class HelpcentreCommentViewset(CommentViewSet):
             comment = serializer.save(commenter=person)
             query.comments.add(comment)
             query.save()
+
+            # Notifications start
+
+            url = f'/helpcentre/issue/{query_id}'
+            category_obj = get_base_category()
+            person_ids = list(query.assignees.all().values_list(
+                'person_id',
+                flat=True
+            ))
+            person_ids = [
+                id for id in person_ids if id != person.id
+            ]
+            template = (
+                f'{person.full_name} added a comment on '
+                f'{query.uploader.full_name}\'s query {query.title}'
+            )
+
+            # For fellow assignees
+            if person_ids:
+                push_notification(
+                    template=template,
+                    category=category_obj,
+                    web_onclick_url=url,
+                    persons=person_ids,
+                    has_custom_users_target=True
+                )
+
+            # For the uploader
+            if query.uploader_id != person.id:
+                uploader_id = query.uploader_id
+                template = (
+                    f'{person.full_name} added a '
+                    f'comment on your query {query.title}'
+                )
+                push_notification(
+                    template=template,
+                    category=category_obj,
+                    web_onclick_url=url,
+                    person=uploader_id,
+                    is_personalised=True
+                )
+
+            # Notifications end
+
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(
