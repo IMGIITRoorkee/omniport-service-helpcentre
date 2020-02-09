@@ -10,8 +10,8 @@ from helpcentre.views.allows_polyjuice import AllowsPolyjuiceView
 app_name = 'helpcentre'
 
 router = routers.SimpleRouter()
-router.register(r'query', QueryViewSet, base_name='query')
-router.register(r'comments', HelpcentreCommentViewset, base_name='comment')
+router.register(r'query', QueryViewSet, basename='query')
+router.register(r'comments', HelpcentreCommentViewset, basename='comment')
 
 urlpatterns = [
     path('', include(router.urls)),
