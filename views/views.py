@@ -1,12 +1,10 @@
 import swapper
-
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
-
 from comments.views import CommentViewSet
-from helpcentre.serializers.serializers import *
+
 from kernel.utils.rights import has_helpcentre_rights
 from kernel.managers.get_role import get_role
 from notifications.actions import push_notification
