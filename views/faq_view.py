@@ -38,3 +38,4 @@ class faq_view(ModelViewSet):
                     },
                     status=status.HTTP_403_FORBIDDEN,
                 )
+            

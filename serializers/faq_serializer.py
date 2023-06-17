@@ -3,4 +3,5 @@ from helpcentre.models import faq
 
 class faq_serializer(ModelSerializer):
     class Meta:
-        model=faqfields='__all__'
+        model=faq
+        fields='__all__'
