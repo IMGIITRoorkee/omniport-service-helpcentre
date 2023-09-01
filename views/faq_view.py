@@ -7,6 +7,7 @@ from rest_framework.viewsets import ModelViewSet
 
 from comments.views import CommentViewSet
 from helpcentre.serializers.faq_serializer import *
+from helpcentre.models.faq import *
 from kernel.utils.rights import has_helpcentre_rights
 from kernel.managers.get_role import get_role
 from notifications.actions import push_notification
@@ -15,9 +16,9 @@ from helpcentre.utils import get_base_category
 Person=swapper.load_model('kernel','Person')
 Maintainer=swapper.load_model('kernel','Maintainer')
 
-class faq_view(ModelViewSet):
-    queryset=faq.objects.all()
-    serializer_class=faq_serializer
+class FaqView(ModelViewSet):
+    queryset=Faq.objects.all()
+    serializer_class=FaqSerializer
     http_method_name=[
         'get',
         'post',

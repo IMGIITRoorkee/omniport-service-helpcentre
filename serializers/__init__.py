@@ -1,4 +1,4 @@
 from helpcentre.serializers.serializers import *
-from helpcentre.serializers.faq_serializer import faq_serializer
-from helpcentre.serializers.quickguide_serializer import quickguide_serializer
+from helpcentre.serializers.faq_serializer import FaqSerializer
+from helpcentre.serializers.quickguide_serializer import QuickguideSerializer
 from helpcentre.serializers.allows_polyjuice import AllowsPolyjuiceSerializer

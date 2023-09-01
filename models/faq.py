@@ -3,7 +3,7 @@ from django.db import models
 from formula_one.models.base import Model
 from formula_one.utils.upload_to import UploadTo
 
-class faq(models.Model):
+class Faq(models.Model):
     app_name=models.CharField(
         max_length=63,
     )
@@ -18,3 +18,4 @@ class faq(models.Model):
 
     class Meta(object):
         verbose_name_plural='faqs'
+        
