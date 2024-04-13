@@ -43,6 +43,7 @@ class Query(CommentableMixin, Model):
 
     related_tag = models.CharField(
         max_length=63,
+        blank = True
     )
 
     class Meta:
