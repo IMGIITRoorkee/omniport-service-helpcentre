@@ -32,6 +32,11 @@ class Query(CommentableMixin, Model):
         null=True,
     )
 
+    link = models.TextField(
+        null=True,
+        blank=True
+    )
+
     is_closed = models.BooleanField(
         default=False,
     )
