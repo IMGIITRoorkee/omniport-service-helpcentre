@@ -32,6 +32,11 @@ class Query(CommentableMixin, Model):
         null=True,
     )
 
+    link = models.TextField(
+        null=True,
+        blank=True
+    )
+
     is_closed = models.BooleanField(
         default=False,
     )
@@ -39,6 +44,11 @@ class Query(CommentableMixin, Model):
     assignees = models.ManyToManyField(
         to=swapper.get_model_name('kernel', 'Maintainer'),
         blank=True,
+    )
+
+    related_tag = models.CharField(
+        max_length=63,
+        blank = True
     )
 
     class Meta:

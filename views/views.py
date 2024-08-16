@@ -1,9 +1,13 @@
 import swapper
 
-from rest_framework import status
+from rest_framework import status, filters
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
+from rest_framework.decorators import action
+from django.db.models import Q
+from functools import reduce
+import operator
 
 from comments.views import CommentViewSet
 from helpcentre.serializers.serializers import *
@@ -25,6 +29,8 @@ class QueryViewSet(ModelViewSet):
 
     serializer_class = QuerySerializer
     permission_classes = [IsAuthenticated, ]
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['title', 'related_tag', 'app_name', 'query']
     http_method_names = [
         'get',
         'post',
@@ -214,6 +220,21 @@ class QueryViewSet(ModelViewSet):
 
         person = self.request.user.person
         serializer.save(uploader=person)
+        return
+
+    @action(detail=False, methods=['get'])
+    def search(self, request):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        search_param = request.query_params.get('search', None)
+        if search_param:
+            queries = [Q(**{field + '__icontains': search_param}) for field in self.search_fields]
+            queryset = queryset.filter(reduce(operator.or_, queries))
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+
 
 
 class HelpcentreCommentViewset(CommentViewSet):
